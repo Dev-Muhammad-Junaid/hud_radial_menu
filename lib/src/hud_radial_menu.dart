@@ -214,7 +214,7 @@ class _HudRadialMenuState extends State<HudRadialMenu>
     // Default: roundedPie
     // We approximate the rounded pie slice using a continuous path.
     // The image shows petals with straight diverging sides and rounded corners.
-    final cornerRadiusOuter = 16.0;
+    const cornerRadiusOuter = 16.0;
 
     final path = Path();
 
@@ -244,7 +244,7 @@ class _HudRadialMenuState extends State<HudRadialMenu>
     final outerRightArcEnd = p(outerR, midAngle + adjustedHalf - 0.15);
     path.arcToPoint(
       outerRightArcEnd,
-      radius: Radius.circular(cornerRadiusOuter),
+      radius: const Radius.circular(cornerRadiusOuter),
       clockwise: true,
     );
 
@@ -260,7 +260,7 @@ class _HudRadialMenuState extends State<HudRadialMenu>
     final outerLeftBlend = p(outerR - cornerRadiusOuter, midAngle - adjustedHalf);
     path.arcToPoint(
       outerLeftBlend,
-      radius: Radius.circular(cornerRadiusOuter),
+      radius: const Radius.circular(cornerRadiusOuter),
       clockwise: true,
     );
 
@@ -695,7 +695,7 @@ class _PetalPainter extends CustomPainter {
   }
 
   void _paintNeumorphic(Canvas canvas, Size size) {
-    final baseColor = const Color(0xFF131D31);
+    const baseColor = Color(0xFF131D31);
     final blendedColor = Color.lerp(baseColor, _activeTint, 0.2)!;
     
     final fillPaint = Paint()
