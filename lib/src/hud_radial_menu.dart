@@ -2,57 +2,225 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
+/// Data class representing a single item in the [HudRadialMenu].
+///
+/// Each item has a [label] shown below the icon, an [icon], and an optional
+/// [tint] color that affects the petal's fill color.
+///
+/// ```dart
+/// const item = MenuItemData(
+///   label: 'Settings',
+///   icon: Icons.settings_outlined,
+///   tint: Color(0xFF4A9EF5),
+/// );
+/// ```
 class MenuItemData {
+  /// The text label displayed beneath the icon in the petal.
   final String label;
+
+  /// The icon displayed in the center of the petal.
   final IconData icon;
+
+  /// The tint color applied to the petal's background.
+  ///
+  /// Defaults to a frosted whitish tone (`Color(0xFFE0E5EC)`).
   final Color tint;
 
+  /// Creates a [MenuItemData] with the given [label], [icon], and optional [tint].
   const MenuItemData({
     required this.label,
     required this.icon,
-    this.tint = const Color(0xFFE0E5EC), // Default frosted whitish tint
+    this.tint = const Color(0xFFE0E5EC),
   });
 }
 
+/// The visual style applied to each petal of the [HudRadialMenu].
+///
+/// Each style changes how the petal background and border are painted.
 enum PetalStyle {
+  /// A frosted-glass look using a [BackdropFilter] with radial gradients
+  /// and a semi-transparent fill. Best on colorful backgrounds.
   glassmorphism,
+
+  /// A solid, opaque fill with a sharp border. Clean and minimal.
   solidFlat,
+
+  /// A dark background with a glowing colored border. Works great on
+  /// dark backgrounds.
   neonGlow,
+
+  /// Only the border is drawn; the interior is transparent unless hovered.
   wireframe,
+
+  /// A soft, extruded look with light/dark shadow gradients to simulate depth.
   neumorphic,
 }
 
+/// The geometric shape of each petal in the [HudRadialMenu].
 enum PetalShape {
+  /// A pie-slice with smoothly rounded outer corners. This is the default.
   roundedPie,
+
+  /// A standard sharp-edged pie slice (arc outer, arc inner, straight sides).
   sharpPie,
+
+  /// A rounded rectangle (squircle) placed at the petal's midpoint.
   squircle,
+
+  /// A chamfered (clipped-corner) rectangle placed at the petal's midpoint.
   chamferedRect,
+
+  /// A circle placed at the petal's midpoint radius.
   circle,
 }
 
+/// A high-fidelity, interactive HUD radial menu widget for Flutter.
+///
+/// [HudRadialMenu] renders a ring of customizable "petal" segments around a
+/// central toggle button. Tapping the center button opens/closes the menu with
+/// a staggered entrance animation.
+///
+/// ## Basic usage
+///
+/// ```dart
+/// HudRadialMenu(
+///   items: const [
+///     MenuItemData(label: 'Settings', icon: Icons.settings_outlined),
+///     MenuItemData(label: 'Help',     icon: Icons.help_outline_rounded),
+///     MenuItemData(label: 'Files',    icon: Icons.folder_open_outlined),
+///   ],
+///   onItemSelected: (index) => debugPrint('Tapped item $index'),
+/// )
+/// ```
+///
+/// ## Styles
+///
+/// Switch the look with [petalStyle]:
+///
+/// ```dart
+/// HudRadialMenu(
+///   items: myItems,
+///   petalStyle: PetalStyle.neonGlow,
+///   petalShape: PetalShape.roundedPie,
+/// )
+/// ```
+///
+/// ## Without a center button
+///
+/// Set [showCenterButton] to `false` to start the menu open and remove the
+/// toggle button — useful when embedding the menu in a custom overlay.
+///
+/// ```dart
+/// HudRadialMenu(
+///   items: myItems,
+///   showCenterButton: false,
+/// )
+/// ```
 class HudRadialMenu extends StatefulWidget {
+  /// The list of items shown as petals.
+  ///
+  /// The number of items determines how the circle is divided — each item
+  /// receives an equal arc. A minimum of 2 items is recommended.
   final List<MenuItemData> items;
+
+  /// The width and height of the widget's bounding box.
+  ///
+  /// Defaults to `360.0`.
   final double menuSize;
+
+  /// The diameter of the circular center toggle button.
+  ///
+  /// Defaults to `52.0`.
   final double centerButtonSize;
+
+  /// The inner radius of the petal ring (distance from center where petals start).
+  ///
+  /// Defaults to `45.0`.
   final double innerRadius;
+
+  /// The outer radius of the petal ring (distance from center where petals end).
+  ///
+  /// Defaults to `160.0`.
   final double outerRadius;
+
+  /// The angular gap (in radians) between adjacent petals.
+  ///
+  /// Increase to add more spacing between petals. Defaults to `0.05`.
   final double gapAngle;
+
+  /// The blur sigma used when [petalStyle] is [PetalStyle.glassmorphism].
+  ///
+  /// Higher values produce more blur. Defaults to `12.0`.
   final double blurSigma;
+
+  /// The visual style applied to each petal.
+  ///
+  /// Defaults to [PetalStyle.glassmorphism].
   final PetalStyle petalStyle;
+
+  /// The geometric shape of each petal.
+  ///
+  /// Defaults to [PetalShape.roundedPie].
   final PetalShape petalShape;
+
+  /// The color used to fill a petal when the cursor hovers over it (desktop/web).
+  ///
+  /// Falls back to the item's [MenuItemData.tint] when `null`.
   final Color? hoverColor;
+
+  /// Override color for the petal border stroke.
+  ///
+  /// Falls back to the item's [MenuItemData.tint] when `null`.
   final Color? borderColor;
+
+  /// Whether to show the center toggle button.
+  ///
+  /// When `false`, the menu starts fully open and cannot be toggled by the user.
+  /// Defaults to `true`.
   final bool showCenterButton;
+
+  /// Whether to render a soft radial glow behind the center button.
+  ///
+  /// Defaults to `true`.
   final bool showCenterGlow;
+
+  /// The color of the center glow effect.
+  ///
+  /// Defaults to `Color(0xFF4A9EF5)`.
   final Color centerGlowColor;
+
+  /// Background color of the center toggle button.
+  ///
+  /// Defaults to `Color(0xFF232D42)`.
   final Color? centerButtonColor;
+
+  /// Icon color for the center toggle button.
+  ///
+  /// Defaults to near-white.
   final Color? centerIconColor;
+
+  /// Color of the petal label text.
+  ///
+  /// Defaults to a semi-transparent white.
   final Color? textColor;
+
+  /// Color of the petal icon.
+  ///
+  /// Defaults to a semi-transparent white.
   final Color? iconColor;
+
+  /// Text color when a petal is hovered.
   final Color? hoverTextColor;
+
+  /// Icon color when a petal is hovered.
   final Color? hoverIconColor;
+
+  /// Called with the tapped item's index when the user selects a petal.
+  ///
+  /// The menu closes automatically after a selection.
   final ValueChanged<int>? onItemSelected;
 
+  /// Creates a [HudRadialMenu].
   const HudRadialMenu({
     super.key,
     this.items = const [
@@ -62,7 +230,7 @@ class HudRadialMenu extends StatefulWidget {
       MenuItemData(
           label: 'Queue',
           icon: Icons.queue_music_rounded,
-          tint: Color(0xFFFF9E9E)), // Reddish tint as in the image
+          tint: Color(0xFFFF9E9E)),
       MenuItemData(label: 'Properties', icon: Icons.info_outline_rounded),
       MenuItemData(label: 'Equalizer', icon: Icons.tune_rounded),
       MenuItemData(label: 'Cast', icon: Icons.cast_rounded),
@@ -327,7 +495,6 @@ class _HudRadialMenuState extends State<HudRadialMenu>
                 final isHovered = _hoveredIndex == i;
                 final isPressed = _pressedIndex == i;
                 
-                // Emil's design principles: responsive buttons, scale on active
                 final scaleFactor = isPressed
                     ? 0.96
                     : isHovered
@@ -420,17 +587,17 @@ class _HudRadialMenuState extends State<HudRadialMenu>
                         shape: BoxShape.circle,
                         color: widget.centerButtonColor ?? const Color(0xFF232D42),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: Colors.white.withValues(alpha:0.15),
                           width: 1.0,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: widget.centerGlowColor.withValues(alpha: 0.2),
+                            color: widget.centerGlowColor.withValues(alpha:0.2),
                             blurRadius: _isOpen ? 12 : 4,
                             spreadRadius: _isOpen ? 1 : 0,
                           ),
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: Colors.black.withValues(alpha:0.3),
                             blurRadius: 8,
                             spreadRadius: 1,
                           ),
@@ -442,7 +609,7 @@ class _HudRadialMenuState extends State<HudRadialMenu>
                         curve: Curves.easeOutCubic,
                         child: Icon(
                           Icons.more_horiz_rounded,
-                          color: widget.centerIconColor ?? Colors.white.withValues(alpha: 0.9),
+                          color: widget.centerIconColor ?? Colors.white.withValues(alpha:0.9),
                           size: 24,
                         ),
                       ),
@@ -500,8 +667,8 @@ class _HudRadialMenuState extends State<HudRadialMenu>
                     icon,
                     size: 22,
                     color: isHovered
-                        ? (hoverIconColor ?? iconColor ?? Colors.white.withValues(alpha: 1.0))
-                        : (iconColor ?? Colors.white.withValues(alpha: 0.85)),
+                        ? (hoverIconColor ?? iconColor ?? Colors.white.withValues(alpha:1.0))
+                        : (iconColor ?? Colors.white.withValues(alpha:0.85)),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -513,8 +680,8 @@ class _HudRadialMenuState extends State<HudRadialMenu>
                       fontSize: 11,
                       fontWeight: isHovered ? FontWeight.w600 : FontWeight.w500,
                       color: isHovered
-                          ? (hoverTextColor ?? textColor ?? Colors.white.withValues(alpha: 1.0))
-                          : (textColor ?? Colors.white.withValues(alpha: 0.75)),
+                          ? (hoverTextColor ?? textColor ?? Colors.white.withValues(alpha:1.0))
+                          : (textColor ?? Colors.white.withValues(alpha:0.75)),
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -575,19 +742,14 @@ class _PetalPainter extends CustomPainter {
     switch (style) {
       case PetalStyle.glassmorphism:
         _paintGlassmorphism(canvas, size);
-        break;
       case PetalStyle.solidFlat:
         _paintSolidFlat(canvas, size);
-        break;
       case PetalStyle.neonGlow:
         _paintNeonGlow(canvas, size);
-        break;
       case PetalStyle.wireframe:
         _paintWireframe(canvas, size);
-        break;
       case PetalStyle.neumorphic:
         _paintNeumorphic(canvas, size);
-        break;
     }
   }
 
@@ -601,9 +763,9 @@ class _PetalPainter extends CustomPainter {
         center,
         size.width / 2,
         [
-          _activeTint.withValues(alpha: baseAlpha + 0.1),
-          _activeTint.withValues(alpha: baseAlpha * 0.7),
-          _activeTint.withValues(alpha: baseAlpha * 0.4),
+          _activeTint.withValues(alpha:baseAlpha + 0.1),
+          _activeTint.withValues(alpha:baseAlpha * 0.7),
+          _activeTint.withValues(alpha:baseAlpha * 0.4),
         ],
         [0.2, 0.7, 1.0],
       )
@@ -617,9 +779,9 @@ class _PetalPainter extends CustomPainter {
         Offset(center.dx - 100, center.dy - 100),
         Offset(center.dx + 100, center.dy + 100),
         [
-          Colors.white.withValues(alpha: isHovered ? 0.25 : 0.15),
-          Colors.white.withValues(alpha: 0.0),
-          Colors.black.withValues(alpha: 0.1),
+          Colors.white.withValues(alpha:isHovered ? 0.25 : 0.15),
+          Colors.white.withValues(alpha:0.0),
+          Colors.black.withValues(alpha:0.1),
         ],
         [0.0, 0.5, 1.0],
       )
@@ -633,8 +795,8 @@ class _PetalPainter extends CustomPainter {
         Offset(center.dx - 100, center.dy - 100),
         Offset(center.dx + 100, center.dy + 100),
         [
-          bColor.withValues(alpha: isHovered ? 0.5 : 0.3),
-          bColor.withValues(alpha: 0.05),
+          bColor.withValues(alpha:isHovered ? 0.5 : 0.3),
+          bColor.withValues(alpha:0.05),
         ],
       )
       ..style = PaintingStyle.stroke
@@ -646,13 +808,13 @@ class _PetalPainter extends CustomPainter {
   void _paintSolidFlat(Canvas canvas, Size size) {
     final fillPaint = Paint()
       ..color = isPressed
-          ? _activeTint.withValues(alpha: 0.6)
-          : (isHovered ? _activeTint : _activeTint.withValues(alpha: 0.8))
+          ? _activeTint.withValues(alpha:0.6)
+          : (isHovered ? _activeTint : _activeTint.withValues(alpha:0.8))
       ..style = PaintingStyle.fill;
     canvas.drawPath(path, fillPaint);
 
     final borderPaint = Paint()
-      ..color = _activeBorder.withValues(alpha: isHovered ? 1.0 : 0.4)
+      ..color = _activeBorder.withValues(alpha:isHovered ? 1.0 : 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawPath(path, borderPaint);
@@ -660,17 +822,17 @@ class _PetalPainter extends CustomPainter {
 
   void _paintNeonGlow(Canvas canvas, Size size) {
     final fillPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.4)
+      ..color = Colors.black.withValues(alpha:0.4)
       ..style = PaintingStyle.fill;
     canvas.drawPath(path, fillPaint);
 
     final borderPaint = Paint()
-      ..color = _activeBorder.withValues(alpha: isHovered ? 1.0 : 0.6)
+      ..color = _activeBorder.withValues(alpha:isHovered ? 1.0 : 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
     final glowPaint = Paint()
-      ..color = _activeBorder.withValues(alpha: isHovered ? 0.8 : 0.4)
+      ..color = _activeBorder.withValues(alpha:isHovered ? 0.8 : 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = isHovered ? 8.0 : 4.0
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
@@ -681,14 +843,14 @@ class _PetalPainter extends CustomPainter {
 
   void _paintWireframe(Canvas canvas, Size size) {
     final borderPaint = Paint()
-      ..color = _activeBorder.withValues(alpha: isHovered ? 1.0 : 0.3)
+      ..color = _activeBorder.withValues(alpha:isHovered ? 1.0 : 0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawPath(path, borderPaint);
 
     if (isHovered) {
       final fillPaint = Paint()
-        ..color = _activeTint.withValues(alpha: 0.15)
+        ..color = _activeTint.withValues(alpha:0.15)
         ..style = PaintingStyle.fill;
       canvas.drawPath(path, fillPaint);
     }
@@ -708,7 +870,7 @@ class _PetalPainter extends CustomPainter {
         ..shader = ui.Gradient.linear(
           Offset(size.width / 2 - 50, size.height / 2 - 50),
           Offset(size.width / 2 + 50, size.height / 2 + 50),
-          [Colors.black.withValues(alpha: 0.8), Colors.transparent],
+          [Colors.black.withValues(alpha:0.8), Colors.transparent],
         )
         ..style = PaintingStyle.fill;
       canvas.drawPath(path, innerShadowPaint);
@@ -717,7 +879,7 @@ class _PetalPainter extends CustomPainter {
         ..shader = ui.Gradient.linear(
           Offset(size.width / 2 - 80, size.height / 2 - 80),
           Offset(size.width / 2, size.height / 2),
-          [Colors.white.withValues(alpha: 0.12), Colors.transparent],
+          [Colors.white.withValues(alpha:0.12), Colors.transparent],
         )
         ..style = PaintingStyle.fill;
 
@@ -725,7 +887,7 @@ class _PetalPainter extends CustomPainter {
         ..shader = ui.Gradient.linear(
           Offset(size.width / 2, size.height / 2),
           Offset(size.width / 2 + 80, size.height / 2 + 80),
-          [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+          [Colors.transparent, Colors.black.withValues(alpha:0.7)],
         )
         ..style = PaintingStyle.fill;
 
@@ -735,7 +897,7 @@ class _PetalPainter extends CustomPainter {
 
     if (borderColor != null) {
       final borderPaint = Paint()
-        ..color = borderColor!.withValues(alpha: isHovered ? 0.5 : 0.2)
+        ..color = borderColor!.withValues(alpha:isHovered ? 0.5 : 0.2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
       canvas.drawPath(path, borderPaint);
@@ -743,7 +905,7 @@ class _PetalPainter extends CustomPainter {
 
     if (isHovered && hoverColor != null) {
       final hoverPaint = Paint()
-        ..color = hoverColor!.withValues(alpha: 0.1)
+        ..color = hoverColor!.withValues(alpha:0.1)
         ..style = PaintingStyle.fill;
       canvas.drawPath(path, hoverPaint);
     }

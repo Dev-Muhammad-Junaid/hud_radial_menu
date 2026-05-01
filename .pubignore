@@ -1,0 +1,17 @@
+# Build outputs and local tooling — not part of the published package
+build/
+.dart_tool/
+*.iml
+.idea/
+.metadata
+coverage/
+
+# Example platform runners (heavy; pub.dev only needs example/lib/)
+example/android/
+example/ios/
+example/linux/
+example/macos/
+example/windows/
+example/build/
+example/.dart_tool/
+example/pubspec.lock
