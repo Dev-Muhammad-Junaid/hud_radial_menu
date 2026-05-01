@@ -1,0 +1,22 @@
+name: hud_radial_menu
+description: A high-fidelity, interactive HUD radial menu for Flutter. Features glassmorphism, neon glow, and premium animations.
+version: 0.0.1
+homepage: https://github.com/Dev-Muhammad-Junaid/switchit-extension # Update this with the actual URL
+repository: https://github.com/Dev-Muhammad-Junaid/switchit-extension
+issue_tracker: https://github.com/Dev-Muhammad-Junaid/switchit-extension/issues
+
+environment:
+  sdk: ^3.10.4
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
