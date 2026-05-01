@@ -35,6 +35,13 @@ flutter pub get
 
 ---
 
+## Try the interactive example
+
+- **Live (web):** [GitHub Pages demo](https://dev-muhammad-junaid.github.io/hud_radial_menu/) — enable **Settings → Pages → GitHub Actions** in this repo on first use; the **Deploy example (web)** workflow must succeed once.
+- **In the package:** the published tarball includes the [`example/`](example/) Flutter project (interactive “lab” for every API option).
+- On **pub.dev**, open the package’s repository link to browse `example/` online, or use your pub cache after `dart pub get`.
+
+
 ## Usage
 
 ### Minimal
